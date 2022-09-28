@@ -46,17 +46,16 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am a user connected as Employee", () => {
   describe("When I am on the Bills page", () => {
 test("fetches bills from mock API GET", async () => {
-  localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
   const root = document.createElement("div")
   root.setAttribute("id", "root")
   document.body.append(root)
   router()
   window.onNavigate(ROUTES_PATH.Bills)
   await waitFor(() => screen.getByText("Mes notes de frais"))
-  const contentPending  = await screen.getAllByText("Transports")
-  expect(contentPending).toBeTruthy()
-  const contentRefused  = await screen.getAllByText("Hôtel et logement")
-  expect(contentRefused).toBeTruthy()
+  const textTransport  = await screen.getAllByText("Transports")
+  expect(textTransport).toBeTruthy()
+  const textHotel  = await screen.getAllByText("Hôtel et logement")
+  expect(textHotel).toBeTruthy()
 })
 describe("When an error occurs on API", () => {
 beforeEach(() => {
@@ -116,24 +115,12 @@ test("Then the page should be rendered correctly", async () => {
 })
 describe("When I'm the bills page and I click on the eye icon", () => {
 test("Then a modal should pop-up", async () => {
-  Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
       $.fn.modal = jest.fn()
-     document.body.innerHTML = BillsUI({data: bills})
-      const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname })
-      }
-      const store = null
-   const bill = new Bills({
-       document, onNavigate, store, localStorage: window.localStorage
-     })
-    
-
-     const btnIconeye = await screen.getAllByTestId('icon-eye')[0]
-     const handleClickIconEye = jest.fn(bill.handleClickIconEye(btnIconeye))
-     expect(btnIconeye).toBeTruthy()
+   document.body.innerHTML = BillsUI({data: bills})
+   const bill = new Bills({ document, localStorage: window.localStorage})   
+   const btnIconeye = await screen.getAllByTestId('icon-eye')[0]
+   const handleClickIconEye = jest.fn(bill.handleClickIconEye(btnIconeye))
+   expect(btnIconeye).toBeTruthy()
      btnIconeye.addEventListener('click',handleClickIconEye(btnIconeye))
       userEvent.click(btnIconeye)
       expect(handleClickIconEye).toHaveBeenCalled() 
